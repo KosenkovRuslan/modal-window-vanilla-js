@@ -90,3 +90,7 @@
 .card-title {
   text-align: center;
 }
+
+.card-img-top {
+  max-height: 285px;
+}
