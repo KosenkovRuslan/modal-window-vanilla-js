@@ -1,5 +1,5 @@
-Element.prototype.appendAfter = function(element) {
-  element.parentNode.insertBefore(this, element.nextSibling);
+Element.prototype.insertAfter = function(element) {
+  element.parentNode.insertBefore(this, element.nextSibling)
 }
 
 function noop() {}
@@ -7,7 +7,7 @@ function noop() {}
 function _createModalFooter(buttons = []) {
   if (buttons.length === 0) {
     return document.createElement('div')
-  } 
+  }
 
   const wrap = document.createElement('div')
   wrap.classList.add('modal-footer')
@@ -22,18 +22,20 @@ function _createModalFooter(buttons = []) {
     wrap.appendChild($btn)
   })
 
+
   return wrap
 }
 
-function _createModal(options) {
+function _createModal(options) { /* Приватная функция, которая будет создавать модальное окно */
   const DEFAULT_WIDTH = '600px'
-  const modal = document.createElement('div')
-  modal.classList.add('vmodal')
-  modal.insertAdjacentHTML('afterbegin', `
+  const modal = document.createElement('div') /* Создаем в DOM элемент с селектором div */
+  modal.classList.add('wmodal') /* Добавляем селектору класс wmodal */
+  /* Вставляем в созданный div разметку */
+  modal.insertAdjacentHTML('afterbegin', ` 
     <div class="modal-overlay" data-close="true">
       <div class="modal-window" style="width: ${options.width || DEFAULT_WIDTH}">
         <div class="modal-header">
-          <span class="modal-title">${options.title || 'Окно'}</span>
+          <span class="modal-title" data-title>${options.title || 'Window'}</span>
           ${options.closable ? `<span class="modal-close" data-close="true">&times;</span>` : ''}
         </div>
         <div class="modal-body" data-content>
@@ -42,42 +44,29 @@ function _createModal(options) {
       </div>
     </div>
   `)
+
   const footer = _createModalFooter(options.footerButtons)
-  footer.appendAfter(modal.querySelector('[data-content]'))
-  document.body.appendChild(modal)
-  return modal
+  footer.insertAfter(modal.querySelector('[data-content]'))
+  document.body.appendChild(modal) /* Добавляем узел modal в конец списка дочерних элементов body */
+
+  return modal /* Возвращаем получившееся модальное окно */
 }
 
-/*
-title: string +
-closable: boolean +
-content: string +
-width: string ('400px')
-destroy(): void +
-Closing the window by clicking on the button or overlay +
----------------
-setContent(html: string): void | Public method +
-onClose(): void
-onOpen(): void
-beforeClose(): boolean
---------------
-animate.css
-*/
-
-$.modal = function(options) {
+$.modal = function(options) { /* Создаем метод modal у объекта $. */
   const ANIMATION_SPEED = 400
-  const $modal = _createModal(options)
-  let closing = false
+  const $modal = _createModal(options) /* Создаем приватную переменную */
+  let closing = false /* Защита при вызове методов */
   let destroyed = false
 
   const modal = {
-    open() {
+    /* Функция modal() имеет 3 метода */
+    open() { /* Открытие модального окна */
       if (destroyed) {
-        console.log('Modal is destroyed');
+        console.log('Modal is destroyed')
       }
       !closing && $modal.classList.add('open')
-    },
-    close() {
+    }, 
+    close() { /* Закрытие модального окна */
       closing = true
       $modal.classList.remove('open')
       $modal.classList.add('hide')
@@ -88,7 +77,7 @@ $.modal = function(options) {
           options.onClose()
         }
       }, ANIMATION_SPEED)
-    }
+    }, 
   }
 
   const listener = event => {
@@ -100,14 +89,17 @@ $.modal = function(options) {
 
   $modal.addEventListener('click', listener)
 
-  return Object.assign(modal, {
+  return Object.assign(modal, { /** Расширяем объект modal, добаляя публичные методы destroy() и setContent() */
     destroy() {
-      $modal.parentNode.removeChild($modal)
-      $modal.removeEventListener('click', listener)
+      $modal.parentNode.removeChild($modal) /** Удаляем узел из DOM */
+      $modal.removeEventListener('click', listener) /** Удаляем слушателя */
       destroyed = true
     },
     setContent(html) {
       $modal.querySelector('[data-content]').innerHTML = html
+    },
+    setTitle(html) {
+      $modal.querySelector('[data-title]').innerHTML = html
     }
   })
 }

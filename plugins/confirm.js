@@ -4,22 +4,32 @@ $.confirm = function(options) {
       title: options.title,
       width: '400px',
       closable: false,
-      content: options.content,
       onClose() {
         modal.destroy()
       },
+      content: options.content,
       footerButtons: [
-        {text: 'Cancel', type: 'secondary', handler() {
-          modal.close()
-          reject()
-        }},
-        {text: 'Remove', type: 'danger', handler() {
-          modal.close()
-          resolve()
-        }},
+        {
+          text: 'Отмена',
+          type: 'secondary',
+          handler() {
+            modal.close();
+            reject()
+          },
+        },
+        {
+          text: 'Удалить',
+          type: 'danger',
+          handler() {
+            modal.close();
+            resolve()
+          },
+        },
       ]
     })
 
-    setTimeout(() => modal.open(), 100)
+    setTimeout(() => {
+      modal.open()
+    }, 100)
   })
 }
